@@ -10,21 +10,47 @@
 #include "bcm2835.h"
 
 bool ofxBcm2835::init() {
+#if defined(TARGET_RASPBERRY_PI)
     return bcm2835_init();
+#else
+    return false;
+#endif
 }
 
 bool ofxBcm2835::close() {
+#if defined(TARGET_RASPBERRY_PI)
     return bcm2835_close();
+#else
+    return false;
+#endif
 }
 
 void ofxBcm2835::pinMode(int pin, int mode) {
+#if defined(TARGET_RASPBERRY_PI)
     int port = digitalPinToPort(pin);
-    bcm2835_gpio_fsel(port, mode == OUTPUT ? BCM2835_GPIO_FSEL_OUTP : BCM2835_GPIO_FSEL_INPT);
+    if (mode == OUTPUT)
+        bcm2835_gpio_fsel(port, BCM2835_GPIO_FSEL_OUTP);
+    if (mode == INPUT)
+        bcm2835_gpio_fsel(port, BCM2835_GPIO_FSEL_INPT);
+    if (mode == INPUT_PULLUP) {
+        bcm2835_gpio_fsel(port, BCM2835_GPIO_FSEL_INPT);
+        bcm2835_gpio_set_pud(port, BCM2835_GPIO_PUD_UP);
+    }
+#endif
 }
 
 void ofxBcm2835::digitalWrite(int pin, int state) {
+#if defined(TARGET_RASPBERRY_PI)
     int port = digitalPinToPort(pin);
     bcm2835_gpio_write(port, state);
+#endif
+}
+
+int ofxBcm2835::digitalRead(int pin) {
+#if defined(TARGET_RASPBERRY_PI)
+    int port = digitalPinToPort(pin);
+    return bcm2835_gpio_lev(port);
+#endif
 }
 
 int ofxBcm2835::digitalPinToPort(int pin) {

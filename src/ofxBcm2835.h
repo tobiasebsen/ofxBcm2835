@@ -8,8 +8,9 @@
 
 #pragma once
 
-#define INPUT   0x00
-#define OUTPUT  0x01
+#define INPUT           0x00
+#define OUTPUT          0x01
+#define INPUT_PULLUP    0x02
 
 #define LOW     0x00
 #define HIGH    0x01
@@ -22,6 +23,7 @@ public:
     
     static void pinMode(int pin, int mode);
     static void digitalWrite(int pin, int state);
+    static int  digitalRead(int pin);
     
     static int digitalPinToPort(int pin);
 };
