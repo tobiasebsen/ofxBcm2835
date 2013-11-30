@@ -6,8 +6,15 @@
 //
 //
 
-#include "ofxBcm2835.h"
+#include <stdio.h>
+#include <unistd.h>			//Used for UART
+#include <fcntl.h>			//Used for UART
+#include <termios.h>
 #include "bcm2835.h"
+
+#include <fstream>
+
+#include "ofxBcm2835.h"
 
 bool ofxBcm2835::init() {
 #if defined(TARGET_RASPBERRY_PI)
@@ -74,4 +81,36 @@ int ofxBcm2835::digitalPinToPort(int pin) {
         case 26: return RPI_GPIO_P1_26;
     }
     return 0;
+}
+
+void ofxBcm2835::ClassSerial::begin(int speed) {
+#if defined(TARGET_RASPBERRY_PI)
+
+    uart0_filestream = open("/dev/ttyAMA0", O_RDWR | O_NOCTTY | O_NDELAY);
+    if (uart0_filestream == -1) {
+        return;
+    }
+    
+    struct termios options;
+    tcgetattr(uart0_filestream, &options);
+	options.c_cflag = speed | CS8 | CLOCAL | CREAD;		//<Set baud rate
+	options.c_iflag = IGNPAR;
+	options.c_oflag = 0;
+	options.c_lflag = 0;
+	tcflush(uart0_filestream, TCIFLUSH);
+	tcsetattr(uart0_filestream, TCSANOW, &options);
+
+#endif
+}
+
+void ofxBcm2835::ClassSerial::end() {
+#if defined(TARGET_RASPBERRY_PI)
+    close(uart0_filestream);
+#endif
+}
+
+int ofxBcm2835::ClassSerial::write(unsigned char *buf, int len) {
+#if defined(TARGET_RASPBERRY_PI)
+    return write(uart0_filestream, &buf, len);
+#endif
 }

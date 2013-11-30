@@ -1,18 +1,21 @@
 #include "ofApp.h"
 
+using namespace ofxBcm2835;
+
 //--------------------------------------------------------------
 void ofApp::setup(){
 
     ofxBcm2835::init();
-    ofxBcm2835::pinMode(11, OUTPUT);
+    
+    pinMode(11, OUTPUT);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
-    ofxBcm2835::digitalWrite(11, HIGH);
+    digitalWrite(11, HIGH);
     ofSleepMillis(100);
-    ofxBcm2835::digitalWrite(11, LOW);
+    digitalWrite(11, LOW);
     ofSleepMillis(100);
 }
 
