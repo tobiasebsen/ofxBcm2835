@@ -10,7 +10,10 @@
 #include <unistd.h>			//Used for UART
 #include <fcntl.h>			//Used for UART
 #include <termios.h>
+
+#if defined(TARGET_RASPBERRY_PI)
 #include "bcm2835.h"
+#endif
 
 #include <fstream>
 
@@ -57,10 +60,13 @@ int ofxBcm2835::digitalRead(int pin) {
 #if defined(TARGET_RASPBERRY_PI)
     int port = digitalPinToPort(pin);
     return bcm2835_gpio_lev(port);
+#else
+	return HIGH;
 #endif
 }
 
 int ofxBcm2835::digitalPinToPort(int pin) {
+#if defined(TARGET_RASPBERRY_PI)
     switch (pin) {
         case 3: return RPI_GPIO_P1_03;
         case 5: return RPI_GPIO_P1_05;
@@ -80,6 +86,7 @@ int ofxBcm2835::digitalPinToPort(int pin) {
         case 24: return RPI_GPIO_P1_24;
         case 26: return RPI_GPIO_P1_26;
     }
+#endif
     return 0;
 }
 
