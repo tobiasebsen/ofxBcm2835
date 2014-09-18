@@ -112,12 +112,12 @@ void ofxBcm2835::ClassSerial::begin(int speed) {
 
 void ofxBcm2835::ClassSerial::end() {
 #if defined(TARGET_RASPBERRY_PI)
-    close(uart0_filestream);
+    ::close(uart0_filestream);
 #endif
 }
 
 int ofxBcm2835::ClassSerial::write(unsigned char *buf, int len) {
 #if defined(TARGET_RASPBERRY_PI)
-    return write(uart0_filestream, &buf, len);
+    return ::write(uart0_filestream, &buf, len);
 #endif
 }
